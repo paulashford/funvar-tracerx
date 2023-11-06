@@ -16,10 +16,10 @@
 # group_data(test)
 # # ----------------------
 
-library( readr )
+# library( readr )
 library( tidyverse )
-library( dplyr )
-library( tidyr )
+# library( dplyr )
+# library( tidyr )
 library( iNEXT.3D )
 library( ggplot2 )
 
@@ -51,6 +51,7 @@ txps = c( 'N' )  # Tx only
 
 # Simplifies the SPECIES_TYPE field to make plot keys easier to read
 simplify_lables <- TRUE
+dupl <- c('NA')
 
 # timing only or duplicated-clonality
 # timing
@@ -60,6 +61,8 @@ simplify_lables <- TRUE
 # duplicated-clonality
 atyp <- 'duplicated-clonality'; 
 timings <- c( 'early', 'late', 'unknown' )   # NOTE: need unknown in tests with ANY_REGION_DUPLICATRED...
+# dupl  <- c('TRUE', 'FALSE')  # Just duplic or non-dupe regions?
+dupl  <- c('FALSE')  # Just duplic or non-dupe regions?
 
 # timing-clonality
 # atyp <- 'timing-clonality'
@@ -75,12 +78,10 @@ typedats <- c( 'FIE' )
 # var_classes <- c( 'Silent', 'Missense_Mutation')
 var_classes <- c( 'Missense_Mutation') 
 
-
 # C/S analysis
 # clonal_filter <- 'C'
 # clonal_filter <- 'S'
 clonal_filter <- 'none'
-
 
 # delete any existing analysis groups 
 if ( exists('dfa_groups') ){ rm(dfa_groups) }
@@ -109,6 +110,11 @@ for ( typedat in typedats ){
     }
 }
 
+# if split dupe / non dupe plots for legibility
+if  (atyp == 'duplicated-clonality' ){
+  dfa_groups <- filter( dfa_groups, ANY_REGION_DUPLICATED %in% dupl )
+}
+
 # dataset label for types
 label_info <- paste0( unlist(typedats), collapse="_and_" )
 
@@ -119,7 +125,7 @@ df_pivs <- pivot_analysis( dfa = dfa_groups, analysis_type = atyp, names_separat
 # iNEXT runs
 # ---------------------
 # bootstrap parameters and diversity orders to include
-knots <- 200; nboot <- 5000; 
+knots <- 200; nboot <- 2000; 
 conf <- 0.95
 q <- c( 1 );  # Shannon diversity
 
@@ -130,6 +136,7 @@ df <- convert_for_iNEXT( df_pivs )
 label_core <- paste0( 'diversity_', 
                         data_file_name, '_', 
                         atyp, 
+                        '_duponly_' ,paste0( dupl, collapse = '-' ), 
                         '_q_', paste( unlist(q), collapse='' ), 
                         '_knots_', knots, 
                         '_nboot_', nboot ) 
@@ -157,10 +164,10 @@ idst <- iNEXT3D( df,
 save( idst, file = file.path( an_dir, paste0( label_full, '.rda' ) ) )
 
 # run/save plots
-facetvar = "Order.q" 
+facetvar = "Order.q"  
 # facetvar = "None" 
 # log2 plot
-logplot <- TRUE; log_type <- 'log2'
+# logplot <- TRUE; log_type <- 'log2'
 # normal plot
 logplot <- FALSE; log_type <- ''
 
