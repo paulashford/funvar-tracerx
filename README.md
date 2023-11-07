@@ -3,7 +3,7 @@
 
 **This repository contains scripts relevant to submission of FunVar-tracerx manuscript and includes code-generated figures, FunVar scoring algorithm and stats calculations.**
 
-| Syntax 				| Description | Description |
+| path  				| | Description |
 | ----------- 			| ----------- | ----------- |
 | `./script` 			| 						| Collated scripts in submission form (ie remove hard-coded paths and any non-relevant code) |
 |  						| `/fie_scoring` 		| Run the FunVar scoring using a flat file export[1]  |
