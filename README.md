@@ -14,14 +14,17 @@
 |	`./plot`			|						| Plots (except diversity) and plot data & working directory |
 
 
-[1] Scoring can be run interactively from: script/fie_scoring/nfe_main.py
-**Input data (mutations, clusters, sites etc):**
-`./data/nfe_score_database_py_funvar_archive_nfe_pfh_mutfam_090_exported_no_mut_id.tsv`
-**Generated from Oracle db by:**
+[1] FunVar-FIE scoring can be run interactively from: 
+`script/fie_scoring/nfe_main.py`
+
+- **using input data (mutations, clusters, sites etc):** `./data/nfe_score_database_py_funvar_archive_nfe_pfh_mutfam_090_exported_no_mut_id.tsv`
+
+- **input data was generated from Oracle db by:**
 `./data/nfe_score_database_py_export.sql`
 
+---
 
-Shield: [![CC BY 4.0][cc-by-shield]][cc-by]
+[![CC BY 4.0][cc-by-shield]][cc-by]
 
 This work is licensed under a
 [Creative Commons Attribution 4.0 International License][cc-by].
