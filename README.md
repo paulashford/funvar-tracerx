@@ -7,7 +7,7 @@
 | ----------- 			| ----------- | ----------- |
 | `./script` 			| 						| Collated scripts in submission form (ie remove hard-coded paths and any non-relevant code) |
 |  						| `/fie_scoring` 		| Run the FunVar scoring using a flat file export[1]  |
-|  						| `/fie_scoring/packages` | Classes for mutations, FIEs and Grantham scoring (aaindex)  |
+|  						| `/fie_scoring/packages` | Classes for mutations, FIEs and Grantham scoring (AAindex)[2]  |
 |  						| `/fie_scoring/working`| Datasets generated from FIE scoring |
 |						| `/diversity_analysis`	| Hill-Shannon diversity calculations & plots |
 |	`./data`			|						| Datasets for figures and calculations incl db exports so can run locally |
@@ -22,14 +22,17 @@
 - **input data was generated from Oracle db by:**
 `./data/nfe_score_database_py_export.sql`
 
----
-
 [![CC BY 4.0][cc-by-shield]][cc-by]
 
-This work is licensed under a
+This work (excluding AAindex[2]) is licensed under a
 [Creative Commons Attribution 4.0 International License][cc-by].
 
 [![CC BY 4.0][cc-by-image]][cc-by]
+---
+[2] AAindex is provided by Kawashima et al 
+Kawashima, S. and Kanehisa, M.; AAindex: amino acid index database. Nucleic Acids Res. 28, 374 (2000). [PMID:10592278]
+https://www.genome.jp/aaindex/aaindex_help.html
+
 
 [cc-by]: http://creativecommons.org/licenses/by/4.0/
 [cc-by-image]: https://i.creativecommons.org/l/by/4.0/88x31.png
