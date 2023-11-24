@@ -1,0 +1,171 @@
+§1a
+# Groups:   TXP [2]
+  TXP   num_fies num_genes num_tumours num_ff fies_per_tumour fies_per_gene num_rows
+  <chr>    <int>     <int>       <int>  <int>           <dbl>         <dbl>    <int>
+1 N          355       109         224     95            1.58          3.26      355
+2 Y          446       216         337    198            1.32          2.06      446
+
+§1b
+# Groups:   TXP, CANCER_TYPE [4]
+  TXP   CANCER_TYPE num_fies num_genes num_tumours num_ff fies_per_tumour fies_per_gene num_rows
+  <chr> <chr>          <int>     <int>       <int>  <int>           <dbl>         <dbl>    <int>
+1 N     LUAD             264        80         164     69            1.61          3.3       264
+2 N     LUSC              91        37          60     36            1.52          2.46       91
+3 Y     LUAD             212       121         161    119            1.32          1.75      212
+4 Y     LUSC             234       112         176    103            1.33          2.09      234
+
+§1c
+# Groups:   TXP, CGC [4]
+  TXP   CGC   num_fies num_genes num_tumours num_ff fies_per_tumour fies_per_gene num_rows
+  <chr> <chr>    <int>     <int>       <int>  <int>           <dbl>         <dbl>    <int>
+1 N     N           91        84          69     75            1.32          1.08       91
+2 N     Y          264        25         197     27            1.34         10.6       264
+3 Y     N          188       171         152    158            1.24          1.10      188
+4 Y     Y          258        45         238     49            1.08          5.73      258
+
+§1d
+# Groups:   TXP, CGC, TX_DRIVERMUT [6]
+# note 'NotApplicable': TX_DRIVERMUT does not apply to TCGA-lung (TXP='Y')
+  TXP   CGC   TX_DRIVERMUT  num_fies num_genes num_tumours num_ff fies_per_tumour fies_per_gene num_rows
+  <chr> <chr> <chr>            <int>     <int>       <int>  <int>           <dbl>         <dbl>    <int>
+1 N     N     FALSE               87        82          65     74            1.34          1.06       87
+2 N     N     TRUE                 4         2           4      2            1             2           4
+3 N     Y     FALSE               14         9          14      8            1             1.56       14
+4 N     Y     TRUE               250        18         191     21            1.31         13.9       250
+5 Y     N     NotApplicable      188       171         152    158            1.24          1.10      188
+6 Y     Y     NotApplicable      258        45         238     49            1.08          5.73      258
+
+§1e
+# Groups:   TXP, TX_DRIVERMUT [3]
+# note 'NotApplicable': TX_DRIVERMUT does not apply to TCGA-lung (TXP='Y')
+  TXP   TX_DRIVERMUT  num_fies num_genes num_tumours num_ff fies_per_tumour fies_per_gene num_rows
+  <chr> <chr>            <int>     <int>       <int>  <int>           <dbl>         <dbl>    <int>
+1 N     FALSE              101        91          72     80            1.40          1.11      101
+2 N     TRUE               254        20         192     23            1.32         12.7       254
+3 Y     NotApplicable      446       216         337    198            1.32          2.06      446
+
+§1f
+# Groups:   TXP, TX_DRIVERMUT, CANCER_TYPE [6]
+# note 'NotApplicable': TX_DRIVERMUT does not apply to TCGA-lung (TXP='Y')
+  TXP   TX_DRIVERMUT  CANCER_TYPE num_fies num_genes num_tumours num_ff fies_per_tumour fies_per_gene num_rows
+  <chr> <chr>         <chr>          <int>     <int>       <int>  <int>           <dbl>         <dbl>    <int>
+1 N     FALSE         LUAD              72        64          50     57            1.44          1.12       72
+2 N     FALSE         LUSC              29        28          22     27            1.32          1.04       29
+3 N     TRUE          LUAD             192        17         144     20            1.33         11.3       192
+4 N     TRUE          LUSC              62        10          48     12            1.29          6.2        62
+5 Y     NotApplicable LUAD             212       121         161    119            1.32          1.75      212
+6 Y     NotApplicable LUSC             234       112         176    103            1.33          2.09      234
+
+§1g
+# Groups:   TXP, CGC, SOURCE_HUGO_SYMBOL [12]
+   TXP   CGC   SOURCE_HUGO_SYMBOL num_fies
+   <chr> <chr> <chr>                 <int>
+ 1 N     Y     BRAF                      8
+ 2 N     Y     CDKN2A                   13
+ 3 N     Y     EGFR                     10
+ 4 N     Y     KRAS                     90
+ 5 N     Y     PIK3CA                   28
+ 6 N     Y     SMARCA4                   7
+ 7 N     Y     TP53                     74
+ 8 Y     Y     EGFR                     23
+ 9 Y     Y     KRAS                     28
+10 Y     Y     PIK3CA                   24
+11 Y     Y     PTEN                      6
+12 Y     Y     TP53                    118
+
+# §1C: FIE SPECIFIC CALCS
+# as described in: script/neofun_paper_stats_calc.R 
+
+
+§2 COHORT COUNTS
+# 	DATA_SOURCE TXP   CANCER_TYPE NUM_PATIENTS NUM_TUMOURS
+# 1 Tx          N     LUAD                 235         239	[Tx421]
+# 2 Tx          N     LUSC                 134         134	[Tx421]
+# 3 Tx          Y     LUAD                 387         387	[TCGA-lung]
+# 4 Tx          Y     LUSC                 342         342	[TCGA-lung]
+
+§3 FIE counts by timing PRE-DUPLICATION('early') and POST-DUPLICATION('late')
+# ----------------------------------------------------------------------------
+§3a 
+# Groups:   TXP, OVERALL_TIMING, tot_fies_group [6]
+  TXP   OVERALL_TIMING tot_fies_group num_fies num_genes num_tumours num_ff fies_per_tumour fies_per_gene num_rows fie_perc_group
+  <chr> <chr>                   <int>    <int>     <int>       <int>  <int>           <dbl>         <dbl>    <int>          <dbl>
+1 N     early                     355      191        41         148     38            1.29          4.66      191           53.8
+2 N     late                      355       62        43          55     39            1.13          1.44       62           17.5
+3 N     unknown                   355      102        50          73     47            1.40          2.04      102           28.7
+4 Y     early                     446      131        75         114     73            1.15          1.75      131           29.4
+5 Y     late                      446       19        19          19     19            1             1          19            4.3
+6 Y     unknown                   446      296       140         251    133            1.18          2.11      296           66.4
+
+§3b
+# Groups:   TXP, CANCER_TYPE, OVERALL_TIMING, tot_fies_group [12]
+   TXP   CANCER_TYPE OVERALL_TIMING tot_fies_group num_fies num_genes num_tumours num_ff fies_per_tumour fies_per_gene num_rows fie_perc_group
+   <chr> <chr>       <chr>                   <int>    <int>     <int>       <int>  <int>           <dbl>         <dbl>    <int>          <dbl>
+ 1 N     LUAD        early                     264      140        29         108     27            1.30          4.83      140           53  
+ 2 N     LUAD        late                      264       38        27          33     26            1.15          1.41       38           14.4
+ 3 N     LUAD        unknown                   264       86        44          61     40            1.41          1.95       86           32.6
+ 4 N     LUSC        early                      91       51        18          40     17            1.27          2.83       51           56  
+ 5 N     LUSC        late                       91       24        18          22     18            1.09          1.33       24           26.4
+ 6 N     LUSC        unknown                    91       16        12          12     14            1.33          1.33       16           17.6
+ 7 Y     LUAD        early                     212       74        43          64     43            1.16          1.72       74           34.9
+ 8 Y     LUAD        late                      212       10        10          10     10            1             1          10            4.7
+ 9 Y     LUAD        unknown                   212      128        75         114     76            1.12          1.71      128           60.4
+10 Y     LUSC        early                     234       57        35          50     35            1.14          1.63       57           24.4
+11 Y     LUSC        late                      234        9         9           9      9            1             1           9            3.8
+12 Y     LUSC        unknown                   234      168        74         137     69            1.23          2.27      168           71.8
+
+§3c
+# Groups:   TXP, CGC, OVERALL_TIMING, tot_fies_group [12]
+   TXP   CGC   OVERALL_TIMING tot_fies_group num_fies num_genes num_tumours num_ff fies_per_tumour fies_per_gene num_rows fie_perc_group
+   <chr> <chr> <chr>                   <int>    <int>     <int>       <int>  <int>           <dbl>         <dbl>    <int>          <dbl>
+ 1 N     N     early                      91       23        23          20     20            1.15          1          23           25.3
+ 2 N     N     late                       91       33        33          29     30            1.14          1          33           36.3
+ 3 N     N     unknown                    91       35        34          30     32            1.17          1.03       35           38.5
+ 4 N     Y     early                     264      168        18         140     20            1.2           9.33      168           63.6
+ 5 N     Y     late                      264       29        10          27     11            1.07          2.9        29           11  
+ 6 N     Y     unknown                   264       67        16          53     17            1.26          4.19       67           25.4
+ 7 Y     N     early                     188       57        56          51     52            1.12          1.02       57           30.3
+ 8 Y     N     late                      188       12        12          12     12            1             1          12            6.4
+ 9 Y     N     unknown                   188      119       110         101    106            1.18          1.08      119           63.3
+10 Y     Y     early                     258       74        19          71     21            1.04          3.89       74           28.7
+11 Y     Y     late                      258        7         7           7      7            1             1           7            2.7
+12 Y     Y     unknown                   258      177        30         174     32            1.02          5.9       177           68.6
+
+# §3S:FIE counts by timing PRE- POST-DUPLICATION SUMMARY TABLES SPECIFIC CALCS
+# ----------------------------------------------------------------------------
+(a)
+# A tibble: 2 × 12
+# Groups:   TXP, CGC, tot_fies_group [2]
+  TXP   CGC   tot_fies_group num_fies num_genes num_tumours num_ff fies_per_tumour fies_per_gene num_rows fie_perc_group perc_fie_early
+  <chr> <chr>          <int>    <int>     <int>       <int>  <int>           <dbl>         <dbl>    <int>          <dbl>          <dbl>
+1 N     N                 91       23        23          20     20            1.15          1          23           25.3             12
+2 N     Y                264      168        18         140     20            1.2           9.33      168           63.6             88
+
+(b) all genes (truncated)
+# Groups:   TXP, OVERALL_TIMING, SOURCE_HUGO_SYMBOL, tot_fies_group [134]
+  TXP   OVERALL_TIMING SOURCE_HUGO_SYMBOL tot_fies_group num_fies num_genes num_tumours num_ff fies_per_tumour fies_per_gene num_rows fie_perc_group
+  <chr> <chr>          <chr>                       <int>    <int>     <int>       <int>  <int>           <dbl>         <dbl>    <int>          <dbl>
+1 N     early          ACADM                         191        1         1           1      1               1             1        1            0.5
+2 N     early          AGXT                          191        1         1           1      1               1             1        1            0.5
+3 N     early          AKT1                          191        1         1           1      1               1             1        1            0.5
+4 N     early          BRAF                          191        5         1           5      2               1             5        5            2.6
+5 N     early          CASQ2                         191        1         1           1      1               1             1        1            0.5
+6 N     early          CDKN2A                        191       10         1          10      1               1            10       10            5.2
+7 N     early          CHD7                          191        1         1           1      1               1             1        1            0.5
+# ℹ 127 more rows
+
+(c) Early/late Tx genes with > 4 FIEs
+# Groups:   OVERALL_TIMING, SOURCE_HUGO_SYMBOL, tot_fies_group [11]
+   OVERALL_TIMING SOURCE_HUGO_SYMBOL tot_fies_group num_fies num_genes num_tumours num_ff fies_per_tumour fies_per_gene num_rows fie_perc_group
+   <chr>          <chr>                       <int>    <int>     <int>       <int>  <int>           <dbl>         <dbl>    <int>          <dbl>
+ 1 early          BRAF                          191        5         1           5      2               1             5        5            2.6
+ 2 early          CDKN2A                        191       10         1          10      1               1            10       10            5.2
+ 3 early          EGFR                          191       10         1          10      1               1            10       10            5.2
+ 4 early          KRAS                          191       54         1          54      1               1            54       54           28.3
+ 5 early          PIK3CA                        191       12         1          12      3               1            12       12            6.3
+ 6 early          TP53                          191       59         1          59      2               1            59       59           30.9
+ 7 late           KRAS                           62       11         1          11      1               1            11       11           17.7
+ 8 late           PIK3CA                         62        9         1           9      1               1             9        9           14.5
+ 9 unknown        KRAS                          102       25         1          25      1               1            25       25           24.5
+10 unknown        PIK3CA                        102        7         1           7      2               1             7        7            6.9
+11 unknown        TP53                          102       14         1          14      1               1            14       14           13.7

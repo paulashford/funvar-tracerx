@@ -16,4 +16,6 @@ dt_hfiet <- read_delim( file.path( st_dir, 'hst_yfa_yj07d_0919.tsv' ), delim = '
 # st_yj03
 dt_yj03 <- read_delim( file.path( st_dir, 'st_yj03_0919.tsv' ), delim = '\t' )
 
-# dt_div_gene <- read_delim( file.path( st_dir, 'diversity_yj07f_full_table_gene.csv' ), delim = '\t' )
+# diversity table (has mutations (missense and synonymous) and FIEs for Tx and TCGA-lung)
+dt_div_gene <- read_csv( file.path( st_dir, 'diversity_yj07f_full_table_gene.csv' )  )
+
