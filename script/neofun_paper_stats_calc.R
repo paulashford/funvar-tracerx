@@ -8,10 +8,10 @@ options(tibble.width = Inf)   # tibble width in terms of num cols
 options(tibble.print_max = 14, tibble.print_min = 7)
 
 # load STs
-source('neofun_paper_stats_load.R')
+source('script/neofun_paper_stats_load.R')
 
 # functions
-source('neofun_paper_stat_functions.R')
+source('script/neofun_paper_stat_functions.R')
 
 # §1 FIE counts by Txp/cancer_type/CGC/driver
 # -------------------------------------------

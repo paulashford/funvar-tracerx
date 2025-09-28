@@ -3,6 +3,9 @@
 
 **This repository contains scripts relevant to submission of FunVar-tracerx manuscript and includes code-generated figures, FunVar scoring algorithm and stats calculations.**
 
+**Note some large files (>50Mb) are zipped in the data directory and need extracting for certain scripts to work correctly (e.g. for ./script/ces/*.R)**
+
+
 | path  				| | Description |
 | ----------- 			| ----------- | ----------- |
 | `./script` 			| 						| Collated scripts in submission form (ie remove hard-coded paths and any non-relevant code) |

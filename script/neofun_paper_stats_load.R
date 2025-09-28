@@ -4,9 +4,9 @@
 # loads datasets
 library(tidyverse)
 		 
-source( 'neofun_paper_stat_functions.R' )
+# source( 'neofun_paper_stat_functions.R' )
 
-st_dir <- '../data'
+st_dir <- 'data'
 
 # FIEs TRACERx and TCGA-lung (score >=3)
 # st_yfa / _yj07d_0919.tsv 
