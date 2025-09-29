@@ -13,6 +13,7 @@
 |  						| `/fie_scoring/packages` | Classes for mutations, FIEs and Grantham scoring (AAindex)[2]  |
 |  						| `/fie_scoring/working`| Datasets generated from FIE scoring |
 |						| `/diversity_analysis`	| Hill-Shannon diversity calculations & plots |
+|						| `/ces`	| Cancer Effect Size calculations for FIEs grouped by FunFam and alignment residue using cancereffectsizeR |
 |	`./data`			|						| Datasets for figures and calculations incl db exports so can run locally |
 |	`./plot`			|						| Plots (except diversity) and plot data & working directory |
 
