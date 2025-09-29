@@ -3,6 +3,10 @@
 
 **This repository contains scripts relevant to submission of FunVar-tracerx manuscript and includes code-generated figures, FunVar scoring algorithm and stats calculations.**
 
+**FunVar makes use of mutation clusters from MutClust https://github.com/paulashford/mutclust**
+
+**FIE scores include a scoring term from Mutationally ernriched functional Families (MutFams) https://github.com/paulashford/mutfam**
+
 **Note some large files (>50Mb) are zipped in the data directory and need extracting for certain scripts to work correctly (e.g. for ./script/ces/*.R)**
 
 
