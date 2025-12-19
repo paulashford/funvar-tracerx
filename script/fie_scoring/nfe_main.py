@@ -1,64 +1,118 @@
 # nfe_main.py 
-# 24/06/2019 and Dec '19, Jan '20...
-# Main call-point for FunVar NFE (FIE) score calculations
+'''
+Paul Ashford  
+24/06/2019
 
-# Nov '23 version for publication 
-#   - remove any hard coded paths)
-#   - create data export from database.py 'nfe_pfh_v090' SQL ->data/nfe_score_database_py_funvar_archive_nfe_pfh_mutfam_090_exported.tsv
-#   - uses HID mutation id - see data/nfe_score_database_py_export.sql and class files
+ 24/06/2019 and Dec '19, Jan '20...
+ Main call-point for FunVar NFE (FIE) score calculations
 
-#-----------------------------------------------------------------------
-# (1) Imports / initialise
-#-----------------------------------------------------------------------
+ Nov '23 version for publication 
+   - remove any hard coded paths)
+   - create data export from database.py 'nfe_pfh_v090' SQL ->data/nfe_score_database_py_funvar_archive_nfe_pfh_mutfam_090_exported.tsv
+   - uses HID mutation id - see data/nfe_score_database_py_export.sql and class files
+ Nov '25 tidy imports and refactor 
+'''
+
+# Imports / initialise
 import sys
 import os
 import pandas as pd
-import math
-# import altair as alt
-from IPython.display import display
-
-# Useful!
-pd.set_option('display.max_columns', None)
-pd.set_option('display.max_rows', 100)
-
+# root package path
+sys.path.append('/Users/ash/git/funvar-tracerx/script')
+# Mutation class
+from fie_scoring.packages.mutations import Mutation as Mutation
+# FIE scoring
+from fie_scoring.packages.neofunevent import score_nfe_by_mutation
 # McLachlan + Grantham index data
-AA_INDEX_PATH = '../../data/aaindex'
-
+AA_INDEX_PATH = 'data/aaindex'
 # data out dir for scored FIEs
-nfe_dir = 'working'
+nfe_dir = 'script/fie_scoring/working'
 
-# append packages for classes
-sys.path.append('./packages')
+def main():
+    # SQL - N/A for submission version
+    print('FunVar-FIE scoring')
+    print('Loading annotated mutations (includes clusters and functional site proximity)... ')
+    # Use exported file
+    sql_data_exported='data/nfe_score_database_py_funvar_archive_nfe_pfh_mutfam_090_exported_no_mut_id.tsv'
+    # sql_data_exported='../../data/nfe_pfh_mutfam_090_af_for_fie_scoring_INC_MUTID.tsv'
+    pd_nfe = pd.read_table(sql_data_exported)
 
-# Database N/A now a flat file
-# from database import OracleConnection as DbOracleConnection
-# from database import SelectStatements as DbSelectStatements
+    # Calculate mutation properties for all mutations & merge with original data frame
+    print('Calculating mutation properties...')
+    mutations = iterate_mutations( pd_nfe )
+    mutation_props = mutation_properties( mutations )
+    pd_nfe_props = pd.merge(    
+                            pd_nfe,
+                            pd.DataFrame( mutation_props ),
+                            how = 'inner', 
+                            left_on = 'HID',
+                            right_on='mutation_id' 
+                        )
+    # Calculate FIE scores using the full df of mutations and properties
+    print('Calculating FIE-scores...')
 
-# Mutations
-from mutations import Mutation as Mutation
-# Scoring FIEs
-from neofunevent import score_nfe_by_mutation
+    # What is Q3 size change for all mutations in this set?  (70.9 at time of running - NFE_v6)
+    delta = pd_nfe_props.deltasize.abs().quantile(0.75)
 
-# -----------------------------------------------------------------
-# # (2) Oracle connection - connect to orengodev1 (Oracle 12c)
-# #-----------------------------------------------------------------------
-# N/A for submission version
+    # Grantham based scores will ignore amino size change and calc using:
+    # gs > median           -> score+1
+    # gs > 75 percentile    -> score+2
+    g_vals = [pd_nfe_props.grantham.abs().quantile(0.50), pd_nfe_props.grantham.abs().quantile(0.75)]
 
-#-----------------------------------------------------------------------
-# (3) SQL select for NFEs
-#-----------------------------------------------------------------------
-# SQL - N/A for submission version
+    pd_nfe_props['nfe_score'] = 0
+    pd_nfe_props['nfe_score_d'] = 0
+    pd_nfe_props['nfe_score_d_mf'] = 0
+    pd_nfe_props['nfe_score_d_mf_h'] = 0
 
-# Use exported file
-sql_data_exported='../../data/nfe_score_database_py_funvar_archive_nfe_pfh_mutfam_090_exported_no_mut_id.tsv'
+    # GRANTHAM-based (pass grantham_vals = [median, 75%] )
+    for nfe_row in pd_nfe_props.itertuples():
+        # Unbiased score (simple score)
+        nfe_row_score_simple = score_nfe_by_mutation( nfe_row, deltas=delta, score_type='simple', mc_p_cutoff=0.001, grantham_vals=g_vals )
+        pd_nfe_props.loc[pd_nfe_props.mutation_id == nfe_row.mutation_id ,'nfe_score'] = nfe_row_score_simple
+        
+        # + diseases
+        nfe_row_score_d = score_nfe_by_mutation( nfe_row, deltas=delta, score_type='s_d', mc_p_cutoff=0.001, grantham_vals=g_vals )
+        pd_nfe_props.loc[pd_nfe_props.mutation_id == nfe_row.mutation_id ,'nfe_score_d'] = nfe_row_score_d
+        
+        # + diseases + MutFam
+        nfe_row_score_d_mf = score_nfe_by_mutation( nfe_row, deltas=delta, score_type='s_d_mf', mc_p_cutoff=0.001, grantham_vals=g_vals )
+        pd_nfe_props.loc[pd_nfe_props.mutation_id == nfe_row.mutation_id ,'nfe_score_d_mf'] = nfe_row_score_d_mf
+        
+        # + diseases + MutFam + hotspot
+        nfe_row_score_d_mf_h = score_nfe_by_mutation( nfe_row, deltas=delta, score_type='s_d_mf_h', mc_p_cutoff=0.001, grantham_vals=g_vals )
+        pd_nfe_props.loc[pd_nfe_props.mutation_id == nfe_row.mutation_id ,'nfe_score_d_mf_h'] = nfe_row_score_d_mf_h
 
-pd_nfe = pd.read_table(sql_data_exported)
-# pd_nfe.head()
-# pd_nfe.info()
+    # Write scored FIEs to tab-sep file
+    # Float->int format changes
+    pd_nfe_props[['NEAR_SCONS_90', 'NEAR_MCSA', 'NEAR_NUC', 'NEAR_LIG']] = pd_nfe_props[['NEAR_SCONS_90', 'NEAR_MCSA', 'NEAR_NUC', 'NEAR_LIG']].fillna(value=0)
+    pd_nfe_props = pd_nfe_props.astype( {       "mclachlan": int, 
+                                                "grantham":int,
+                                                "nfe_score":int,
+                                                "nfe_score_d":int,
+                                                "nfe_score_d_mf":int,
+                                                "nfe_score_d_mf_h":int,  
+                                                "NEAR_ANGSTROMS":int,
+                                                "NEAR_SCONS_90":int,
+                                                "NEAR_MCSA":int,
+                                                "NEAR_NUC":int,
+                                                "NEAR_LIG":int 
+                                                })
+    # Float format 10f (fine for gnomAD and MutClust P vals!)
+    pd.options.display.float_format = '{:.10f}'.format
+    pd_nfe_props.dtypes
 
-#-----------------------------------------------------------------------
-# (4) FUNCTION: Iterate mutations  
-#-----------------------------------------------------------------------
+    # Output tsv
+    fie_scored_file = 'funvar_fie_scores_output.tsv'
+    print('Writing tab-separated file: ' + os.path.join( nfe_dir, fie_scored_file ))
+    pd_nfe_props.to_csv( 
+                        os.path.join( nfe_dir, fie_scored_file ), 
+                        sep='\t', 
+                        index=False, 
+                        float_format='%.10f' 
+                        )
+    
+
+# Function: Iterate mutations  
 # This will calculate McLachlan, delta size and polymorphic properties.
 # Threshold for deciding polymorphism
 def iterate_mutations( pd_nfe, poly_thresh = 0.00001 ):
@@ -89,9 +143,7 @@ def iterate_mutations( pd_nfe, poly_thresh = 0.00001 ):
                 ]     
     return mutations
     
-#-----------------------------------------------------------------------
-# (5) FUNCTION: Collate Mutations with calculated McLachlan etc properties
-#-----------------------------------------------------------------------
+# Function: Collate Mutations with calculated McLachlan etc properties
 def mutation_properties( mutations ):
     mutation_props = [ {
                         'nfe_type':     mutation.nfe_type,
@@ -121,97 +173,6 @@ def mutation_properties( mutations ):
                     ]
     return mutation_props
 
-#-----------------------------------------------------------------------
-# (6) Calculate mutation properties for all mutations & 
-#       merge with original data frame
-#-----------------------------------------------------------------------
-mutations = iterate_mutations( pd_nfe )
-mutation_props = mutation_properties( mutations )
 
-pd_nfe_props = pd.merge(    
-                            pd_nfe,
-                            pd.DataFrame( mutation_props ),
-                            how = 'inner', 
-                            left_on = 'HID',
-                            right_on='mutation_id' 
-                        )
-
-#-----------------------------------------------------------------------
-# (7) Calculate NFE scores using the full pandas df of mutations and their properties
-#-----------------------------------------------------------------------
-# What is Q3 size change for all mutations in this set?  (70.9 at time of running - NFE_v6)
-delta = pd_nfe_props.deltasize.abs().quantile(0.75)
-
-# 01 09 2022 Grantham scores *include size change calculation*
-#x-scrivener-item:///Users/ash/Dropbox/bioinf/neofun/scrivener/neofun_v3.1_sectioning.scriv?id=9ACA4C6E-B6FA-4387-8F2A-F7A313A8641B
-pd_nfe_props[['mclachlan','grantham']].describe()
-# mclachlan	grantham
-# count	16756.000000	16756.000000
-# mean	0.508236	81.687873
-# std	0.951459	50.787531
-# min	0.000000	5.000000
-# 25%	0.000000	43.000000
-# 50%	0.000000	64.000000
-# 75%	1.000000	109.000000
-# max	3.000000	215.000000
-# Grantham based scores will ignore amino size change and calc using:
-# gs > median           -> score+1
-# gs > 75 percentile    -> score+2
-g_vals = [pd_nfe_props.grantham.abs().quantile(0.50), pd_nfe_props.grantham.abs().quantile(0.75)]
-
-pd_nfe_props['nfe_score'] = 0
-pd_nfe_props['nfe_score_d'] = 0
-pd_nfe_props['nfe_score_d_mf'] = 0
-pd_nfe_props['nfe_score_d_mf_h'] = 0
-
-# GRANTHAM-based (pass grantham_vals = [median, 75%] )
-for nfe_row in pd_nfe_props.itertuples():
-    # Unbiased score (simple score)
-    nfe_row_score_simple = score_nfe_by_mutation( nfe_row, deltas=delta, score_type='simple', mc_p_cutoff=0.001, grantham_vals=g_vals )
-    pd_nfe_props.loc[pd_nfe_props.mutation_id == nfe_row.mutation_id ,'nfe_score'] = nfe_row_score_simple
-    
-    # + diseases
-    nfe_row_score_d = score_nfe_by_mutation( nfe_row, deltas=delta, score_type='s_d', mc_p_cutoff=0.001, grantham_vals=g_vals )
-    pd_nfe_props.loc[pd_nfe_props.mutation_id == nfe_row.mutation_id ,'nfe_score_d'] = nfe_row_score_d
-    
-    # + diseases + MutFam
-    nfe_row_score_d_mf = score_nfe_by_mutation( nfe_row, deltas=delta, score_type='s_d_mf', mc_p_cutoff=0.001, grantham_vals=g_vals )
-    pd_nfe_props.loc[pd_nfe_props.mutation_id == nfe_row.mutation_id ,'nfe_score_d_mf'] = nfe_row_score_d_mf
-    
-    # + diseases + MutFam + hotspot
-    nfe_row_score_d_mf_h = score_nfe_by_mutation( nfe_row, deltas=delta, score_type='s_d_mf_h', mc_p_cutoff=0.001, grantham_vals=g_vals )
-    pd_nfe_props.loc[pd_nfe_props.mutation_id == nfe_row.mutation_id ,'nfe_score_d_mf_h'] = nfe_row_score_d_mf_h
-
-#-----------------------------------------------------------------------
-# (8) Write scored NFE's to pickle & Excel
-#-----------------------------------------------------------------------
-# Float->int format changes
-pd_nfe_props[['NEAR_SCONS_90', 'NEAR_MCSA', 'NEAR_NUC', 'NEAR_LIG']] = pd_nfe_props[['NEAR_SCONS_90', 'NEAR_MCSA', 'NEAR_NUC', 'NEAR_LIG']].fillna(value=0)
-pd_nfe_props = pd_nfe_props.astype( {       "mclachlan": int, 
-                                            "grantham":int,
-                                            "nfe_score":int,
-                                            "nfe_score_d":int,
-                                            "nfe_score_d_mf":int,
-                                            "nfe_score_d_mf_h":int,  
-                                            "NEAR_ANGSTROMS":int,
-                                            "NEAR_SCONS_90":int,
-                                            "NEAR_MCSA":int,
-                                            "NEAR_NUC":int,
-                                            "NEAR_LIG":int 
-                                            })
-# Float format 10f (fine for gnomAD and MutClust P vals!)
-pd.options.display.float_format = '{:.10f}'.format
-pd_nfe_props.dtypes
-
-# Save FIE scores file
-fie_scored_file = 'funvar_fie_scores_v090_nmid.tsv'
-# EXPORT tsv
-pd_nfe_props.to_csv( 
-                    os.path.join( nfe_dir, fie_scored_file ), 
-                    sep='\t', 
-                    index=False, 
-                    float_format='%.10f' 
-                    )
-# Save Pickle too
-fie_scored_pickle_file = 'funvar_fie_scores_v090_nmid.pkl'
-pd_nfe_props.to_pickle( os.path.join( nfe_dir, fie_scored_pickle_file ) )
+if __name__ == '__main__':
+    main()

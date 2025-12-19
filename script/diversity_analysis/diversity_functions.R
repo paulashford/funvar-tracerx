@@ -1,8 +1,13 @@
 # diversity_functions.R
+# 24 02 2023
+# Dr Paul Ashford 
+# This work is licensed under a
+# [Creative Commons Attribution 4.0 International License][cc-by].
+# [cc-by]: http://creativecommons.org/licenses/by/4.0/
+
 # Data wrangling to convert FIE count exports to suitable iNEXT analysis formats
 # for examples of calls see:
 #   copy_number/analysis/07_diversity_iNEXT/07_diversity_simplified.R 
-# 24 02 2023
 
 # Initial filter of table rows eg by cancer type, FIE/muts etc...
 filter_analysis <- function( df_analysis, 
@@ -317,7 +322,7 @@ conv_asy <- function( ln_asy, log_base = 'natural' ){
 # ---------------------
 # iNEXT plots
 # ---------------------
-inext_plot <- function( idst, atyp, data_file_type, an_dir, label_full, logplot=TRUE, log_type='log2', facetvar = "None" ) {
+inext_plot <- function( idst, atyp, data_file_type, an_dir, label_full, logplot=TRUE, log_type='log2', facetvar = "None", pal_type =1 ) {
   # plot_types: three types of plots: sample-size-based rarefaction/extrapolation curve (type = 1); sample completeness curve (type = 2); coverage-based rarefaction/extrapolation curve (type = 3).
   plot_types <- c(1,2) # just use this value
   # atyp: 'timing', 'duplicated-clonality', 'timing-clonality'
@@ -376,16 +381,18 @@ inext_plot <- function( idst, atyp, data_file_type, an_dir, label_full, logplot=
   # empty shapes background, filled shapes for FIEs; circles (non-dupe), triangles (duplicated)
   # handy guide: https://stackoverflow.com/questions/16813278/cycling-through-point-shapes-when-more-than-6-factor-levels  [firefox/notion: #ggplot #R]
   if ( atyp == "duplicated-clonality" ){
-      samp_re <- samp_re +            
+    # just duplicated / not
+    # http://www.cookbook-r.com/Graphs/Colors_(ggplot2) 
+    if (pal_type == 1) {
+        cbPalette <- c( "#56B4E9", "#56B4E9", "#E69F00", "#E69F00",  "#0072B2","#0072B2", "#D55E00", "#D55E00" )  # blue/orange not/dupe (darker for FIEs)
+        samp_re <- samp_re +            
               scale_shape_manual( values = c( 20, 8, 20, 8, 20, 8, 20, 8  )  )   # simpler filled circle for clonal, mult-cross sub-clonal
-              
-      # just duplicated / not
-      # http://www.cookbook-r.com/Graphs/Colors_(ggplot2) 
-      cbPalette <- c( "#56B4E9", "#56B4E9", "#E69F00", "#E69F00",  "#0072B2","#0072B2", "#D55E00", "#D55E00" )  # blue/orange not/dupe (darker for FIEs)
-
-      samp_re <- samp_re +            
-          scale_colour_manual(values=cbPalette) +
-          scale_fill_manual(values=cbPalette)
+    } else {
+        cbPalette <- c( "#56B4E9", "#E69F00","#0072B2", "#D55E00")  # if just subclonal (or clonal use colour to distinguish dupe/non-dupe)
+    }
+        samp_re <- samp_re +            
+            scale_colour_manual(values=cbPalette) +
+            scale_fill_manual(values=cbPalette)
   }
 
   # save plots (1: R/E sample size, 2: samp completeness)

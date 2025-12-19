@@ -1,21 +1,21 @@
 # FunVar-FIE protocol benchmarking
 
-README.md
-P. Ashford
-November 2025
+FunVar protocol benchmarking of pancancer FIEs against predicted driver mutations 
+obtained from other 3D cancer driver prediction tools.
 
-FunVar protocol benchmarking of pancancer FIEs against predicted driver mutations obtained from other 3D cancer driver prediction tools.
 FIEs and other driver predictions are all referenced against independent annotations:
 *Actual Positives*: Clincally significant COSMIC Cancer Mutation Census (CMC)[^1]
 *Actual Negatives*: ClinVar[^2] (benign variants) and dbSNP[^3] (benign variants).
 
-Minimal versions of all datasets needed to run benchmarking are included. Please see associated references for full source data and descriptions.
+Minimal versions of all datasets needed to run benchmarking are included.
+Please see associated references for full source data and descriptions.
 
 ---
 
 ## Run benchmark
 
 1. **Clone repository to local directory**
+
 ```bash
 cd path/to/repos
 git clone git@github.com:paulashford/funvar-tracerx.git
@@ -23,8 +23,8 @@ cd funvar-tracerx
 ```
 
 2. **Install pre-requisite R packages (if necessary)**
-[tidyverse](https://tidyverse.tidyverse.org/)
-[yardstick](https://yardstick.tidymodels.org/)
+	[tidyverse](https://tidyverse.tidyverse.org/)
+	[yardstick](https://yardstick.tidymodels.org/)
 
 3. **Run benchmarks**
 

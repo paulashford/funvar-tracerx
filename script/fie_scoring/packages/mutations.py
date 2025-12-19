@@ -1,5 +1,8 @@
 # mutations.py
 '''
+Paul Ashford  
+14/06/2019
+
 Mutation classes including basic Mutation, those mapped to CATH in MutationMap
 14/06/2019 and 10/12/2019
 
@@ -17,8 +20,10 @@ git/funvar/covid_funvar_pipeline/py/funvar_scoring/packages/funvar_covid/mutatio
 Note: amino acid mutation scoring matrices are here:
 https://www.genome.jp/aaindex/AAindex/list_of_matrices
 '''
-import operator
-from resources import aaindex2b as aaindex
+from resources.aaindex import aaindex
+
+# funvar-tracerx/script/fie_scoring/packages/mutations.py
+# funvar-tracerx/resources
 
 class Mutation():
     '''
@@ -136,7 +141,6 @@ class Mutation():
         if indexType not in self.MCLACH_INDEX_TYPES:
             raise ValueError( "%s is not a valid McLachlan index type." % indexType)
 
-        from resources import aaindex2b as aaindex
         aaindex.init(path = self.aa_index_path, index = '2')
         mcIndex = aaindex.get('MCLA720101')  # later version of McLach scores
         
@@ -148,7 +152,6 @@ class Mutation():
         if indexType not in self.MCLACH_INDEX_TYPES:
             raise ValueError( "%s is not a valid amino acid index type." % indexType)
 
-        # from resources import aaindex2b as aaindex
         aaindex.init(path = self.aa_index_path, index = '2')
         mcIndex = aaindex.get(indexType)  
         
@@ -156,11 +159,9 @@ class Mutation():
         return mcIndex.get( self.uniprot_aa_change[0], self.uniprot_aa_change[2] )
 
     def __calculateAminoSizeChg(self):
-        from resources import aaindex2b as aaindex
         # Volume
         aaindex.init(path = self.aa_index_path, index = '1')
         volIndex = aaindex.get('PONJ960101')
-        #print ( 'AminoVolChg params: ', volIndex, self.aaChangeVarMap[0], self.aaChangeVarMap[2] )
         aminoFromSize = volIndex.get(self.uniprot_aa_change[0])
         aminoToSize = volIndex.get(self.uniprot_aa_change[2])
         return aminoToSize - aminoFromSize

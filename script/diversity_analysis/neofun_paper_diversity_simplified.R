@@ -1,5 +1,7 @@
 # Diversity scoring with iNEXT and iNEXT.3D
 # 23 02 2023
+# Paul Ashford 
+
 # Simpler files based on script/v3.1/neofun_v3.1_paper_counts_yj_diversity.sql and diversity VIEW
 # filtering is done here, not in various Oracle exports
 # See: script/v3.1/neofun_v3.1_paper_counts_yj_diversity.sql
@@ -33,9 +35,16 @@ data_dir <- '../../data'
 an_dir  <- 'working'
 
 # MAIN DIVERSITY ANALSYSIS SOURCE FILES - fies and missense/syn mutations by gene or funfam (require filtering for FIE, background etc)
-data_file_name <- 'diversity_yj07f_full_table'
-data_file_type <- 'gene'  # info used elsewhere!
-# data_file_type <- 'funfam'  # info used elsewhere!
+# data_file_type <- 'gene'  
+data_file_type <- 'funfam' 
+
+# CATH-PDB 
+  # data_file_name <- 'diversity_yj07f_full_table'
+# AF 
+  # data_file_name <- 'diversity_AF_yj07f_full_table'
+# CATH + AF
+  data_file_name <- 'diversity_AF_CATH_combo_yj07f_full_table'
+
 data_file_name <- paste0( data_file_name, '_', data_file_type, '.csv' )
 data_imported <- read_delim( file.path( data_dir, data_file_name ), delim = ',' ) 
 
@@ -61,8 +70,8 @@ dupl <- c('NA')
 # duplicated-clonality
 atyp <- 'duplicated-clonality'; 
 timings <- c( 'early', 'late', 'unknown' )   # NOTE: need unknown in tests with ANY_REGION_DUPLICATRED...
-# dupl  <- c('TRUE', 'FALSE')  # Just duplic or non-dupe regions?
-dupl  <- c('FALSE')  # Just duplic or non-dupe regions?
+dupl  <- c('TRUE', 'FALSE')  # Just duplic or non-dupe regions?
+# dupl  <- c('FALSE')  # Just duplic or non-dupe regions?
 
 # timing-clonality
 # atyp <- 'timing-clonality'
@@ -70,9 +79,9 @@ dupl  <- c('FALSE')  # Just duplic or non-dupe regions?
 
 # FIEs or bckground muts or both
 # nfd = not a FIE or a known driver
-typedats <- c( 'FIE' )
+# typedats <- c( 'FIE' )
 # typedats <- c( 'nfd' )
-# typedats <- c( 'FIE', 'nfd' )
+typedats <- c( 'FIE', 'nfd' )
 
 # variant types 
 # var_classes <- c( 'Silent', 'Missense_Mutation')
@@ -80,8 +89,8 @@ var_classes <- c( 'Missense_Mutation')
 
 # C/S analysis
 # clonal_filter <- 'C'
-# clonal_filter <- 'S'
-clonal_filter <- 'none'
+clonal_filter <- 'S'
+# clonal_filter <- 'none'
 
 # delete any existing analysis groups 
 if ( exists('dfa_groups') ){ rm(dfa_groups) }
@@ -94,7 +103,7 @@ for ( typedat in typedats ){
                             	txp = txps, 
 								              timing_in = timings,
                             	cancer_in = cancers,
-                            	remove_cols = c( 'VARIANT_CLASS', 'SCORE_THRESHOLD', 'DRIVERMUT', 'MUTANT_EXPRESSED', 'NUM_ROWS' ),
+                            	remove_cols = c( 'VARIANT_CLASS', 'SCORE_THRESHOLD', 'DRIVERMUT', 'MUTANT_EXPRESSED', 'NUM_ROWS', 'SCORE_THRESHOLD_MC2', 'SCORE_THRESHOLD_MC1' ),
                             	simpler_labels = simplify_lables,
                             	pyclone_filt = clonal_filter
                         )
@@ -125,9 +134,12 @@ df_pivs <- pivot_analysis( dfa = dfa_groups, analysis_type = atyp, names_separat
 # iNEXT runs
 # ---------------------
 # bootstrap parameters and diversity orders to include
-knots <- 200; nboot <- 2000; 
+knots <- 200; 
+# endpt <- 250;
+nboot <- 2000; 
 conf <- 0.95
 q <- c( 1 );  # Shannon diversity
+# q <- c( 0, 1 );  # species diversity + Shannon diversity
 
 # convert to (simpler) iNEXT-suitable format
 df <- convert_for_iNEXT( df_pivs )
@@ -159,27 +171,36 @@ idst <- iNEXT3D( df,
                     datatype = 'abundance', 
                     knots = knots, 
                     nboot = nboot, 
-                    conf = conf
-					          , endpoint = 200 )
+                    conf = conf )
+					          # ,endpoint = endpt )
 save( idst, file = file.path( an_dir, paste0( label_full, '.rda' ) ) )
 
 # run/save plots
 facetvar = "Order.q"  
 # facetvar = "None" 
 # log2 plot
-# logplot <- TRUE; log_type <- 'log2'
+logplot <- TRUE; log_type <- 'log2'
 # normal plot
-logplot <- FALSE; log_type <- ''
+# logplot <- FALSE; log_type <- ''
+
+# only makes difference if "duplicated-clonality" 
+pal_type <- 1
+# if just C or S then helpful to change col / shapes
+pal_type <- 2
 
 inext_plot( idst, 
             atyp = atyp, 
-            data_file_type=data_file_type, 
-            an_dir=an_dir, 
-            label_full=label_full, 
-            logplot=logplot, 
-            log_type=log_type, 
-            facetvar=facetvar
+            data_file_type = data_file_type, 
+            an_dir = an_dir, 
+            label_full = label_full, 
+            logplot = logplot, 
+            log_type = log_type, 
+            facetvar = facetvar,
+            pal_type = pal_type 
           )
 
 
 
+
+
+  

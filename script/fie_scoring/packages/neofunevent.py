@@ -1,5 +1,8 @@
 # neofunevent.py
 '''
+Paul Ashford  
+10/12/2019
+
 Functional Impact Events (FIEs) - score based on Mutation properties
 such as gnomAD polymorhisms, McLachlan score and size change
 10/12/2019
@@ -34,7 +37,7 @@ A sensible approach is to use the weighted corrected p-val (has literature suppo
 with a stringent cut-off (p<0.001) - most of the unweighted p-values are then <0.05 too (5 not in LUAD+LUSC). E.g.:
     
 '''
-import math
+# import math
 
 # Load pre-merged nfe data (without any scoring)
 def load_nfe_merge_data(nfe_pickle_file):
@@ -107,7 +110,7 @@ def score_nfe_by_mutation(nfe_row, deltas = 70.9, score_type = 'simple', mc_p_cu
     return tot_nfe_by_mutation
 
 '''
-POSITIVE TERMS
+FIE SCORE TERMS
 '''
 # NFEs (of either type "MC" or "PFH")
 
@@ -194,13 +197,6 @@ def __score_mutfam(nfe_row):
         s_mutfam = 1
     return s_mutfam
 
-'''
-NEGATIVE TERMS
-'''
-# def __score_poly(nfe_row):
-#     s_poly = 0
-#     if nfe_row.ispoly:
-#         s_poly = -1
-#     return s_poly
+
 
 
