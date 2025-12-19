@@ -1,0 +1,4 @@
+tidyverse==0.1.0
+pandas==2.3.3
+yardstick==0.15.0
+ipykernel==7.1.0
