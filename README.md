@@ -64,6 +64,7 @@ Further info: https://pymolwiki.org/AAindex
 [cc-by-image]: https://i.creativecommons.org/l/by/4.0/88x31.png
 [cc-by-shield]: https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg
 
-[^1]: Ashford P, Frankell AM, Piszka Z, Pang CSM, Abbasian M, Al Bakir M, Jamal-Hanjani M, McGranahan N, Swanton C, Orengo CA. 2024. Gene duplication is associated with gene diversification and potential neofunctionalisation in lung cancer evolution. [*In Press*].
+[^1]: Ashford P, Frankell AM, Piszka Z, Pang CSM, Abbasian M, Bakir MA, Jamal-Hanjani M, McGranahan N, Swanton C, Orengo CA. Gene duplication is associated with gene diversification and potential neofunctionalization in lung cancer evolution. Genome Res. 2026 Mar 2;36(3):561-577. doi: 10.1101/gr.278663.123. PMID: 41714147; PMCID: PMC12951968. 
+https://doi.org/10.1101/gr.278663.123
 [^2]: Kawashima, S. and Kanehisa, M.; AAindex: amino acid index database. Nucleic Acids Res. 28, 374 (2000). [PMID:10592278]
 https://www.genome.jp/aaindex/aaindex_help.html
